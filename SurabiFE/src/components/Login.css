@@ -1,0 +1,38 @@
+body {
+  margin: 0;
+  padding: 0;
+  background-color: #000;
+  font-family: Arial, sans-serif;
+}
+
+.login-container {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #000;
+}
+
+.login-box {
+  background: #111;
+  padding: 40px;
+  border-radius: 8px;
+  text-align: center;
+  width: 320px;
+  box-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
+}
+
+.login-box h2 {
+  color: #fff;
+  margin-bottom: 10px;
+}
+
+.login-box p {
+  color: #ccc;
+  margin-bottom: 20px;
+}
+
+.google-button {
+  display: flex;
+  justify-content: center;
+}
