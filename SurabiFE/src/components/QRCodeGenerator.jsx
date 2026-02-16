@@ -8,7 +8,12 @@ const QRCodeGenerator = () => {
   const [qrData, setQrData] = useState(null);
 
   const generateQR = () => {
-    const token = localStorage.getItem("token") || "demo-token";
+    const token = localStorage.getItem("token");
+
+if (!token) {
+  alert("Please login first");
+  return;
+}
 
     const now = new Date();
     const payload = {

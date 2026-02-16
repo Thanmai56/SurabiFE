@@ -2,18 +2,23 @@ import React, { useState, useEffect } from 'react';
 import UserProfile from './UserProfile';
 import QRCodeGenerator from './QRCodeGenerator';
 import './Dashboard.css';
-
+import Login from './Login';
+import Wallet from './Wallet';
 const Dashboard = () => {
   const [activeSection, setActiveSection] = useState('dashboard');
   const [isOnline, setIsOnline] = useState(navigator.onLine);
-
+  const [userName, setUserName] = useState("User");
   useEffect(() => {
     const handleOnline = () => setIsOnline(true);
     const handleOffline = () => setIsOnline(false);
 
     window.addEventListener('online', handleOnline);
     window.addEventListener('offline', handleOffline);
-
+    
+    const storedName = localStorage.getItem("userName");
+  if (storedName) {
+    setUserName(storedName);
+  } 
     return () => {
       window.removeEventListener('online', handleOnline);
       window.removeEventListener('offline', handleOffline);
@@ -21,10 +26,10 @@ const Dashboard = () => {
   }, []);
 
   const canteens = [
-    { name: 'Royal Canteen', location: 'Near Main Gate', status: 'Open Now', icon: '🍲', color: '#dcfce7', textColor: '#166534' },
-    { name: 'Food Court A', location: 'Near Auditorium', status: 'Open Now', icon: '🍕', color: '#dcfce7', textColor: '#166534' },
-    { name: 'Quick Bites', location: 'Near Sports Complex', status: 'Closed', icon: '🍔', color: '#fee2e2', textColor: '#991b1b' },
-    { name: 'South Feast', location: 'Near Lake Side', status: 'Open Now', icon: '🍚', color: '#dcfce7', textColor: '#166534' },
+    { name: 'Royal Canteen', location: 'Near Main Gate', status: 'Open Now', icon: '🍲' },
+    { name: 'Food Court A', location: 'Near Auditorium', status: 'Open Now', icon: '🍕' },
+    { name: 'Quick Bites', location: 'Near Sports Complex', status: 'Closed', icon: '🍔' },
+    { name: 'South Feast', location: 'Near Lake Side', status: 'Open Now', icon: '🍚' },
   ];
 
   const renderActiveSection = () => {
@@ -32,7 +37,13 @@ const Dashboard = () => {
       case 'profile':
         return (
           <div className="section-content">
-            <UserProfile />
+            <Login />
+          </div>
+        );
+        case 'wallet':
+        return (
+          <div className="section-content">
+            <Wallet />
           </div>
         );
       case 'qr':
@@ -47,7 +58,7 @@ const Dashboard = () => {
           <div className="section-content">
             <div className="dashboard-overview">
               <div className="welcome-banner">
-                <h2>Welcome back, Surabhi! 👋</h2>
+                <h2>Welcome back, {userName}! 👋</h2>
                 <p>Everything is ready for your Surabhi Fest 2026 experience. You have 3 upcoming events today.</p>
                 <div className="quick-actions">
                   <button className="action-btn btn-primary" onClick={() => setActiveSection('qr')}>
@@ -56,6 +67,9 @@ const Dashboard = () => {
                   <button className="action-btn btn-secondary" onClick={() => setActiveSection('profile')}>
                     <span>👤</span> Edit Profile
                   </button>
+                   {/* <button className="action-btn btn-secondary" onClick={() => setActiveSection('wallet')}>
+                    <span>👤</span> Wallet
+                  </button> */}
                 </div>
               </div>
 
@@ -64,13 +78,15 @@ const Dashboard = () => {
                 <div className="stats-grid">
                   {canteens.map((canteen, index) => (
                     <div key={index} className="stat-card">
-                      <div className="stat-icon" style={{ backgroundColor: canteen.color }}>
+                      <div className="stat-icon">
                         {canteen.icon}
                       </div>
                       <div className="stat-info">
                         <h4>{canteen.name}</h4>
                         <p className="canteen-location">{canteen.location}</p>
-                        <span className="canteen-status" style={{ color: canteen.textColor }}>{canteen.status}</span>
+                        <span className={`canteen-status ${canteen.status === 'Open Now' ? 'status-open' : 'status-closed'}`}>
+                          {canteen.status}
+                        </span>
                       </div>
                     </div>
                   ))}
@@ -97,7 +113,8 @@ const Dashboard = () => {
           )}
           <div className="user-badge" onClick={() => setActiveSection('profile')}>
             <span className="avatar-small">👤</span>
-            <span className="user-name">Surabhi User</span>
+            <span className="user-name">{userName}</span>
+            
           </div>
         </div>
       </header>
@@ -131,6 +148,13 @@ const Dashboard = () => {
                 >
                   <span className="nav-icon">📱</span>
                   <span className="nav-text">QR Tools</span>
+                </button>
+                <button
+                  className={activeSection === 'wallet' ? 'nav-link active' : 'nav-link'}
+                  onClick={() => setActiveSection('wallet')}
+                >
+                  <span className="nav-icon">💰</span>
+                  <span className="nav-text">Wallet</span>
                 </button>
               </li>
             </ul>

@@ -1,18 +1,20 @@
 import React from "react";
 import { useGoogleLogin } from "@react-oauth/google";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 import "./Login.css";
 
 function Login() {
+  const navigate = useNavigate();
+
   const login = useGoogleLogin({
     flow: "auth-code",
     onSuccess: async (codeResponse) => {
       try {
         console.log("Google auth code:", codeResponse.code);
 
-        // Send code to your backend endpoint
         const response = await axios.post(
-          "http://localhost:5000/api/user/auth/login-oauth", // change if needed
+          "http://localhost:5000/api/user/auth/login-oauth",
           {
             code: codeResponse.code,
           }
@@ -20,10 +22,15 @@ function Login() {
 
         console.log("Backend response:", response.data);
 
+        // Store JWT token
+        if (response.data.token) {
+          localStorage.setItem("token", response.data.token);
+        }
+
         alert("Login successful");
 
-        // Example: store token if backend returns one
-        // localStorage.setItem("token", response.data.token);
+        // Redirect to dashboard
+        navigate("/dashboard");
 
       } catch (error) {
         console.error("Backend login error:", error);

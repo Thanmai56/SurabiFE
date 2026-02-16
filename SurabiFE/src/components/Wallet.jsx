@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-
+import { useNavigate } from 'react-router-dom';
+import './Wallet.css';
 
 function Wallet() {
   const [balance, setBalance] = useState(0);
   const [amount, setAmount] = useState("");
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   const BASE_URL = "http://localhost:5000"; // change if needed
 
@@ -41,11 +44,14 @@ function Wallet() {
       return;
     }
 
+    setLoading(true);
+
     try {
       // 1. Load Cashfree SDK
       const scriptLoaded = await loadCashfreeScript();
       if (!scriptLoaded) {
         alert("Cashfree SDK failed to load");
+        setLoading(false);
         return;
       }
 
@@ -82,30 +88,66 @@ function Wallet() {
         fetchBalance();
         alert("Wallet updated successfully");
         setAmount("");
+        setLoading(false);
       }, 5000);
     } catch (err) {
       console.error(err);
       alert("Payment failed");
+      setLoading(false);
     }
   };
 
+  const goToDashboard = () => {
+    navigate('/dashboard');
+  };
+
   return (
-    <div className="wallet-container">
-      <div className="wallet-box">
-        <h2>My Wallet</h2>
+    <div className="wallet-page">
+      {/* Navbar */}
+      <nav className="wallet-navbar">
+        <div className="nav-container">
+          <div className="logo">
+            <span className="logo-icon">💰</span>
+            <span>CashFlow Wallet</span>
+          </div>
+          <button className="dashboard-btn" onClick={goToDashboard}>
+            <span className="btn-icon">←</span>
+            <span>Back to Dashboard</span>
+          </button>
+        </div>
+      </nav>
 
-        <div className="balance">₹ {balance}</div>
+      {/* Wallet Content */}
+      <div className="wallet-container">
+        <div className="wallet-box">
+          <h2>My Wallet</h2>
+          
+          <div className="balance-icon">💰</div>
+          <div className="balance">₹ {balance.toLocaleString()}</div>
+          
+          <div className="input-group">
+            <input
+              type="number"
+              placeholder="Enter amount"
+              value={amount}
+              onChange={(e) => setAmount(e.target.value)}
+              min="1"
+            />
+          </div>
 
-        <input
-          type="number"
-          placeholder="Enter amount"
-          value={amount}
-          onChange={(e) => setAmount(e.target.value)}
-        />
+          <button 
+            onClick={handleAddMoney} 
+            disabled={loading}
+            className={loading ? 'loading' : ''}
+          >
+            {loading ? 'Processing...' : 'Add Money'}
+          </button>
 
-        <button onClick={handleAddMoney}>
-          Add Money
-        </button>
+          <div className="wallet-note">
+            <span>💡</span>
+            <p>Minimum recharge amount is ₹1</p>
+          </div>
+        </div>
       </div>
     </div>
   );
