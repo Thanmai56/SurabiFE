@@ -14,7 +14,7 @@ function Login() {
         console.log("Google auth code:", codeResponse.code);
 
         const response = await axios.post(
-          "http://localhost:5000/api/user/auth/login-oauth",
+          "http://188.245.112.188:5000/api/user/auth/login-oauth",
           {
             code: codeResponse.code,
           }
